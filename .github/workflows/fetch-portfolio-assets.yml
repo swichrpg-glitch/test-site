@@ -17,9 +17,9 @@ jobs:
       - name: Download Behance assets
         run: |
           mkdir -p assets
-          curl -L --fail --retry 3 -A 'Mozilla/5.0' 'https://mir-s3-cdn-cf.behance.net/projects/404/a35ca2219565765.Y3JvcCwxNDAwLDEwOTUsMCwxOTc.png' -o assets/work01.png
-          curl -L --fail --retry 3 -A 'Mozilla/5.0' 'https://mir-s3-cdn-cf.behance.net/projects/404/f83005222489449.Y3JvcCwxNDAwLDEwOTUsMCwxMDgx.png' -o assets/work02.png
-          curl -L --fail --retry 3 -A 'Mozilla/5.0' 'https://mir-s3-cdn-cf.behance.net/projects/404/3e3221174246583.Y3JvcCwxNDAwLDEwOTUsMCw2NjE.png' -o assets/work03.png
+          curl -L --fail --retry 3 -A 'Mozilla/5.0' 'https://mir-s3-cdn-cf.behance.net/projects/404/13c10e248938015.Y3JvcCwxOTIwLDE1MDEsMCww.png' -o assets/work01.png
+          curl -L --fail --retry 3 -A 'Mozilla/5.0' 'https://mir-s3-cdn-cf.behance.net/projects/404/2d4629222489449.Y3JvcCwxNDAwLDEwOTUsMCww.png' -o assets/work02.png
+          curl -L --fail --retry 3 -A 'Mozilla/5.0' 'https://mir-s3-cdn-cf.behance.net/projects/404/c51b02242112199.Y3JvcCwyNTYwLDIwMDIsMCww.png' -o assets/work03.png
           file assets/work01.png assets/work02.png assets/work03.png
           test -s assets/work01.png
           test -s assets/work02.png
