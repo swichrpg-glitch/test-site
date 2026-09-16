@@ -65,3 +65,50 @@ if (form) {
     if (note) note.textContent = 'Сообщение скопировано. Вставьте его в открывшийся Telegram и отправьте.';
   });
 }
+
+/* Immersive project preview */
+const modal = document.createElement('div');
+modal.className = 'project-modal';
+modal.innerHTML = `<div class="project-modal-backdrop"></div><div class="project-modal-panel" role="dialog" aria-modal="true" aria-label="Просмотр проекта"><button class="project-modal-close" aria-label="Закрыть">×</button><div class="project-modal-image"><img src="" alt=""></div><div class="project-modal-info"><div><small class="project-modal-kicker"></small><h2></h2><p></p></div><a class="project-modal-link" href="" target="_blank" rel="noopener">Открыть проект на Behance <span>↗</span></a></div></div>`;
+document.body.appendChild(modal);
+
+const modalStyle = document.createElement('style');
+modalStyle.textContent = `
+.project-modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:22px;visibility:hidden;pointer-events:none}.project-modal.is-open{visibility:visible;pointer-events:auto}.project-modal-backdrop{position:absolute;inset:0;background:rgba(17,17,17,.72);backdrop-filter:blur(14px);opacity:0;transition:opacity .35s ease}.project-modal.is-open .project-modal-backdrop{opacity:1}.project-modal-panel{position:relative;width:min(1180px,96vw);max-height:94vh;overflow:auto;background:#f4f1eb;border-radius:26px;box-shadow:0 30px 100px rgba(0,0,0,.4);transform:translateY(24px) scale(.97);opacity:0;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s ease;scrollbar-width:thin}.project-modal.is-open .project-modal-panel{transform:none;opacity:1}.project-modal-close{position:absolute;right:18px;top:18px;z-index:2;width:46px;height:46px;border:1px solid rgba(17,17,17,.25);border-radius:50%;background:#f4f1eb;color:#111;font:400 28px/1 Arial;cursor:pointer;transition:transform .3s ease,background .3s ease,color .3s ease}.project-modal-close:hover{transform:rotate(90deg);background:#111;color:#fff}.project-modal-image{min-height:420px;max-height:67vh;background:#171717;display:flex;align-items:center;justify-content:center;padding:34px;overflow:hidden}.project-modal-image img{display:block;width:auto;max-width:100%;height:auto;max-height:62vh;object-fit:contain;border-radius:14px;box-shadow:0 22px 60px rgba(0,0,0,.3)}.project-modal-info{display:grid;grid-template-columns:1fr auto;gap:35px;align-items:end;padding:30px 34px 34px}.project-modal-kicker{font-size:10px;letter-spacing:.14em;font-weight:800;opacity:.45}.project-modal-info h2{font-size:clamp(34px,5vw,64px);line-height:.92;letter-spacing:-.06em;margin:9px 0 12px}.project-modal-info p{font-size:14px;line-height:1.5;max-width:600px;margin:0;opacity:.58}.project-modal-link{display:inline-flex;align-items:center;gap:18px;padding:15px 18px;border:1px solid #111;border-radius:999px;color:#111;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap;transition:background .3s ease,color .3s ease,transform .3s ease}.project-modal-link span{font-size:17px}.project-modal-link:hover{background:#111;color:#fff;transform:translateY(-3px)}body.modal-open{overflow:hidden}
+@media(max-width:800px){.project-modal{padding:10px}.project-modal-panel{width:100%;max-height:95vh;border-radius:20px}.project-modal-close{right:12px;top:12px;width:42px;height:42px}.project-modal-image{min-height:260px;max-height:58vh;padding:20px}.project-modal-image img{max-height:52vh;border-radius:10px}.project-modal-info{display:block;padding:24px 20px 25px}.project-modal-info h2{font-size:36px;margin-top:8px}.project-modal-info p{font-size:13px}.project-modal-link{margin-top:22px;width:100%;justify-content:space-between;box-sizing:border-box;padding:16px}.project-cursor{display:none}}
+`;
+document.head.appendChild(modalStyle);
+
+const modalImage = modal.querySelector('.project-modal-image img');
+const modalKicker = modal.querySelector('.project-modal-kicker');
+const modalTitle = modal.querySelector('.project-modal-info h2');
+const modalText = modal.querySelector('.project-modal-info p');
+const modalLink = modal.querySelector('.project-modal-link');
+const closeModal = () => { modal.classList.remove('is-open'); document.body.classList.remove('modal-open'); };
+
+const openProject = (project) => {
+  const image = project.querySelector('.project-image img');
+  const title = project.querySelector('.project-meta h3');
+  const text = project.querySelector('.project-meta p');
+  const small = project.querySelector('.project-meta small');
+  if (!image || !title) return;
+  modalImage.src = image.currentSrc || image.src;
+  modalImage.alt = image.alt || title.textContent;
+  modalKicker.textContent = small ? small.textContent : 'PROJECT';
+  modalTitle.textContent = title.textContent;
+  modalText.textContent = text ? text.textContent : '';
+  modalLink.href = project.href;
+  modal.classList.add('is-open');
+  document.body.classList.add('modal-open');
+};
+
+document.querySelectorAll('.project').forEach(project => {
+  project.addEventListener('click', (event) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    openProject(project);
+  });
+});
+modal.querySelector('.project-modal-close').addEventListener('click', closeModal);
+modal.querySelector('.project-modal-backdrop').addEventListener('click', closeModal);
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal(); });
