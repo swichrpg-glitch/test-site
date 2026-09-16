@@ -10,11 +10,11 @@ const reveal = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.08 });
 
-document.querySelectorAll('.project, .service, .intro-grid, .about-grid, .contact-row').forEach(el => reveal.observe(el));
+document.querySelectorAll('.project, .service, .intro-grid, .about-grid, .contact-row, .contact-heading, .contact-form-wrap').forEach(el => reveal.observe(el));
 
 const style = document.createElement('style');
 style.textContent = `
-.project,.service,.intro-grid,.about-grid,.contact-row{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}.is-visible{opacity:1;transform:none}
+.project,.service,.intro-grid,.about-grid,.contact-row,.contact-heading,.contact-form-wrap{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}.is-visible{opacity:1;transform:none}
 
 /* Services — editorial list */
 .service-list{position:relative;overflow:hidden}
@@ -37,6 +37,28 @@ style.textContent = `
 .service:nth-child(3):before{background:#d6ff36}
 .service:nth-child(4):before{background:#b9a6ff}
 
+/* Contact — editorial close + form */
+.contact-heading{display:grid;grid-template-columns:1fr 220px;gap:40px;align-items:end;position:relative;z-index:1}
+.contact h2{margin-bottom:28px}
+.contact-lead{max-width:430px;font-size:16px;line-height:1.55;margin:0}
+.contact-mark{font-size:clamp(42px,5vw,76px);line-height:.82;letter-spacing:-.08em;font-weight:800;opacity:.1;text-align:right;transform:rotate(-8deg)}
+.contact-form-wrap{margin-top:75px;display:grid;grid-template-columns:.42fr 1fr;gap:7vw;position:relative;z-index:1}
+.form-intro{padding-top:8px;font-size:13px;line-height:1.55}
+.form-intro span{font-size:11px;letter-spacing:.16em;font-weight:800;display:block;margin-bottom:22px}
+.form-intro p{max-width:220px;margin:0}
+.contact-form{display:grid;grid-template-columns:1fr 1fr;gap:26px 22px}
+.contact-form label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;display:flex;flex-direction:column;gap:10px}
+.contact-form label:nth-child(3),.contact-form label:nth-child(4),.contact-form button,.form-note{grid-column:1 / -1}
+.contact-form input,.contact-form select,.contact-form textarea{width:100%;border:0;border-bottom:1px solid rgba(17,17,17,.5);border-radius:0;background:transparent;padding:10px 0 13px;font:500 16px Manrope,Arial,sans-serif;color:#111;outline:none;transition:border-color .25s ease,transform .25s ease}
+.contact-form textarea{resize:vertical;min-height:80px}
+.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-bottom-color:#111;transform:translateY(-2px)}
+.contact-form input::placeholder,.contact-form textarea::placeholder{color:#111;opacity:.42}
+.contact-form select{appearance:none;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#111 50%),linear-gradient(135deg,#111 50%,transparent 50%);background-position:calc(100% - 7px) 17px,calc(100% - 2px) 17px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:25px}
+.contact-form select:invalid{color:rgba(17,17,17,.42)}
+.contact-form .contact-button{justify-self:start;margin-top:4px;border:0;cursor:pointer;font-family:Manrope,Arial,sans-serif}
+.contact-form .contact-button span{font-size:18px}
+.form-note{font-size:11px;opacity:.5;margin:-12px 0 0}
+
 @media(max-width:800px){
 .service{grid-template-columns:35px 1fr 48px;gap:12px;padding:28px 0}
 .service p{grid-column:2;max-width:none}
@@ -44,6 +66,33 @@ style.textContent = `
 .service:hover{padding-left:10px;padding-right:6px}
 .service h3{font-size:30px}
 .service p{font-size:12px}
+.contact-heading{grid-template-columns:1fr;gap:20px}
+.contact-mark{text-align:left;font-size:48px;position:absolute;right:0;top:5px}
+.contact-form-wrap{grid-template-columns:1fr;gap:35px;margin-top:50px}
+.form-intro p{max-width:320px}
+.contact-form{grid-template-columns:1fr;gap:24px}
+.contact-form label:nth-child(3),.contact-form label:nth-child(4),.contact-form button,.form-note{grid-column:auto}
+.contact-form .contact-button{width:100%}
 }
 `;
 document.head.appendChild(style);
+
+const form = document.querySelector('#contact-form');
+if (form) {
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const message = [
+      'Новый запрос с сайта Anastasia Galizova',
+      '',
+      `Имя: ${data.get('name')}`,
+      `Контакт: ${data.get('contact')}`,
+      `Задача: ${data.get('service')}`,
+      `Проект: ${data.get('message') || 'не указано'}`
+    ].join('\n');
+    try { await navigator.clipboard.writeText(message); } catch (_) {}
+    window.open('https://t.me/galizova_art', '_blank', 'noopener');
+    const note = form.querySelector('.form-note');
+    if (note) note.textContent = 'Сообщение скопировано. Вставьте его в открывшийся Telegram и отправьте.';
+  });
+}
